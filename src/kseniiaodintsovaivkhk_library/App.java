@@ -9,15 +9,18 @@ import entity.Author;
 import entity.Book;
 import entity.History;
 import entity.Reader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import managers.BookManager;
+import managers.DataManager;
 import managers.HistoryManager;
 import managers.ReaderManager;
 /**
@@ -29,6 +32,7 @@ public class App {
     private final BookManager bookManager;
     private final ReaderManager readerManager;
     private final HistoryManager historyManager;
+    private final DataManager dataManager;
     private Book[] books;
     private Reader[] readers;
     private History[] histories;
@@ -38,8 +42,8 @@ public class App {
         bookManager = new BookManager();
         readerManager = new ReaderManager();
         historyManager = new HistoryManager();
-        
-        books = new Book[0];
+        dataManager = new DataManager();
+        books = dataManager.loadBooksFromFile();
         readers = new Reader[0];
         histories = new History[0];
         testAddBook();
@@ -71,15 +75,8 @@ public class App {
                 case 1:
                     System.out.println("Выбрана задача: 1. Добавить книгу");
                     addBook(bookManager.createBook());
-                try {
-                    FileOutputStream fileOutputStream = new FileOutputStream("MyBook");
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                    objectOutputStream.writeObject(books);
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(App.class.getName()).log(Level.SEVERE, "Нет такого файла", ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(App.class.getName()).log(Level.SEVERE, "Ошибка ввода / вывода", ex);
-                }
+                DataManager dataManager = new DataManager();
+                dataManager.saveBooksToFile(books);
             
                     break;
                 case 2:
@@ -148,4 +145,7 @@ public class App {
         readers = Arrays.copyOf(readers, readers.length + 1);
         readers[readers.length - 1] = reader;
     }
+
+    
 }
+
